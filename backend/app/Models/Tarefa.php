@@ -15,6 +15,7 @@ class Tarefa extends Model
         'titulo',
         'descricao',
         'data_conclusao',
+        'data_prazo',
         'status',
         'id_categoria',
     ];

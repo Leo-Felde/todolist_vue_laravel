@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tarefa;
+use App\Models\Categoria;
+use App\Models\TarefaUsuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\TarefaUsuarioController;
 
 class TarefaController extends Controller
 {
@@ -20,12 +24,31 @@ class TarefaController extends Controller
             'titulo' => 'required|string|max:80',
             'descricao' => 'nullable|string|max:200',
             'data_conclusao' => 'nullable|date',
+            'data_prazo' => 'nullable|date',
             'status' => 'required|string|max:30',
-            'id_categoria' => 'required|integer|exist----------s:categorias,id',
+            'id_categoria' => 'nullable|integer|exists:categorias,id',
+            'colaboradores' => 'nullable|array',
         ]);
 
-        $tarefa = Tarefa::create($validated);
-        return response()->json($tarefa, 201);
+        DB::beginTransaction();
+
+        try {
+            $tarefa = Tarefa::create($validated);
+
+            // Criação da relação na tabela tarefas_usuarios
+            $tarefaUsuarioController = new TarefaUsuarioController();
+            $tarefaUsuarioController->store([
+                'id_dono' => auth()->id(),
+                'id_tarefa' => $tarefa->id,
+                'colaboradores' => $validated['colaboradores'] ?? null
+            ]);
+            DB::commit();
+
+            return response()->json($tarefa, 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Não foi possível criar a tarefa'], 500);
+        }
     }
 
     // Carregar uma tarefa
@@ -41,12 +64,36 @@ class TarefaController extends Controller
             'titulo' => 'nullable|string|max:80',
             'descricao' => 'nullable|string|max:200',
             'data_conclusao' => 'nullable|date',
+            'data_prazo' => 'nullable|date',
             'status' => 'nullable|string|max:30',
             'id_categoria' => 'nullable|integer|exists:categorias,id',
+            'colaboradores' => 'nullable|array',
         ]);
+        DB::beginTransaction();
 
-        $tarefa->update($validated);
-        return response()->json($tarefa, 200);
+        try {
+            $tarefa->update($validated);
+            
+            // se alterado os colaboradores então atualiza a tabela relacionada
+            if (isset($validated['colaboradores'])) {
+                $tarefaUsuario = TarefaUsuario::where('id_tarefa', $tarefa->id)
+                                          ->where('id_dono', auth()->id())
+                                          ->first();
+
+                if ($tarefaUsuario) {
+                    $tarefaUsuarioController = new TarefaUsuarioController();
+                    $tarefaUsuarioController->update(
+                        ['id' => $tarefaUsuario->id],  // Envia o id do TarefaUsuario
+                        ['colaboradores' => $validated['colaboradores']]  // Envia os colaboradores
+                    );
+                }
+            }
+            
+            return response()->json($tarefa, 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Não foi possível criar a tarefa'], 500);
+        }
     }
 
     // Excluir tarefa

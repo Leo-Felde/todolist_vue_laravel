@@ -12,10 +12,10 @@ class CreateTarefasTable extends Migration
             $table->id();
             $table->string('titulo', 80);
             $table->string('descricao', 200)->nullable();
-            $table->timestamp('data_criacao')->useCurrent();
             $table->timestamp('data_conclusao')->nullable();
+            $table->timestamp('data_prazo')->nullable();
             $table->string('status', 30);
-            $table->unsignedInteger('id_categoria');
+            $table->unsignedInteger('id_categoria')->nullable();
             $table->foreign('id_categoria')->references('id')->on('categorias')->onDelete('cascade');
             $table->timestamps();
         });

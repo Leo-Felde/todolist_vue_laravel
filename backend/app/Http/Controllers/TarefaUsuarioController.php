@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TarefaUsuario;
-use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class TarefaUsuarioController extends Controller
 {
@@ -12,17 +12,12 @@ class TarefaUsuarioController extends Controller
         return TarefaUsuario::all();
     }
 
-    public function store(Request $request)
+    public function store(array $data)
     {
-        $request->validate([
-            'id_dono' => 'required|exists:usuarios,id',
-            'id_tarefa' => 'required|exists:tarefas,id',
-            'colaboradores' => 'nullable|array',
-        ]);
+        $validatedData = $this->validateStoreData($data);
+        $tarefaUsuario = TarefaUsuario::create($validatedData);
 
-        $tarefaUsuario = TarefaUsuario::create($request->all());
-
-        return response()->json($tarefaUsuario, 201);
+        return $tarefaUsuario;
     }
 
     public function show($id)
@@ -30,18 +25,37 @@ class TarefaUsuarioController extends Controller
         return TarefaUsuario::findOrFail($id);
     }
 
-    public function update(Request $request, $id)
+    public function update(array $data, $id)
     {
         $tarefaUsuario = TarefaUsuario::findOrFail($id);
-        $tarefaUsuario->update($request->all());
 
-        return response()->json($tarefaUsuario, 200);
+        $validatedData = $this->validateStoreData($data);
+
+        $tarefaUsuario->update($validatedData);
+
+        return $tarefaUsuario;
     }
 
     public function destroy($id)
     {
         TarefaUsuario::destroy($id);
 
-        return response()->json(null, 204);
+        return true;
+    }
+
+    private function validateStoreData(array $data)
+    {
+        // Validação manual dos dados
+        $validator = \Validator::make($data, [
+            'id_dono' => 'required|exists:usuarios,id',
+            'id_tarefa' => 'required|exists:tarefas,id',
+            'colaboradores' => 'nullable|array',
+            'colaboradores.*' => 'integer|exists:users,id'
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        return $validator->validated();
     }
 }
