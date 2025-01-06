@@ -48,6 +48,16 @@ npm install
 composer install
    ```
    
+### 3. Configurar o ambiente
+Tanto no front-end quanto no back-end </br>
+Crie uma cópia do arquivo `.env.example` dentro do diretório /frontend ou /backend e renomeie-o para `.env` **(sem .example)** <br>
+Altere os valores das variáveis conforme necessário
+   
+**Criar banco de dados**
+```bash
+php artisan migrate  
+```
+   
 ## Desenvolvimento
 Abra um terminal no diretório do projeto e digite os seguintes comandos:</br>
 
