@@ -13,9 +13,9 @@
     </q-item-section>
 
     <q-item-section>
-      <q-item-labe l>
+      <q-item-label>
         {{ title }}
-      </q-item-labe>
+      </q-item-label>
       <q-item-label caption>
         {{ caption }}
       </q-item-label>
