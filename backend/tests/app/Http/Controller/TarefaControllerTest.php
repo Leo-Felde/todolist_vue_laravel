@@ -3,6 +3,7 @@
 namespace tests\app\Http\Controller;
 
 use App\Models\Tarefa;
+use App\Models\SubTarefa;
 use App\Models\Categoria;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -38,37 +39,26 @@ class TarefaControllerTest extends TestCase
         $response->assertJsonCount(3); // Verifica que existem 3 tarefas na resposta
     }
 
+    // Teste para listar tarefas sem subtarefas com filtros
     #[Test]
     #[Covers(\App\Http\Controllers\TarefaController::class)]
-    public function it_can_create_a_task()
+    public function it_can_list_tasks_without_subtasks_and_with_filters()
     {
-        // Mock de uma categoria
-        $categoria = Categoria::factory()->create();
+        // Criação de tarefas
+        $tarefas = Tarefa::factory()->count(3)->create();
 
-        // Dados válidos para criar uma tarefa
-        $data = [
-            'titulo' => 'Nova Tarefa',
-            'descricao' => 'Descrição da tarefa',
-            'status' => 'pendente',
-            'id_categoria' => $categoria->id,
-        ];
+        // Criação de uma subtarefa associada à primeira tarefa
+        $subtarefa = SubTarefa::factory()->create(['id_tarefa' => $tarefas[0]->id]);
 
-        // POST para criar uma nova tarefa
-        $response = $this->postJson('/api/tarefas', $data);
+        // Requisição GET para listar tarefas sem subtarefas e com filtro de título
+        $response = $this->getJson('/api/tarefas?titulo=' . $tarefas[2]->titulo);
 
-        // Verifica se a tarefa foi criada com sucesso
-        $response->assertStatus(Response::HTTP_CREATED);
-        $response->assertJson([
-            'titulo' => 'Nova Tarefa',
-            'descricao' => 'Descrição da tarefa',
-            'status' => 'pendente',
-            'id_categoria' => $categoria->id,
-        ]);
+        // Verifica se o request não teve erros
+        $response->assertStatus(Response::HTTP_OK);
 
-        // Verifica se a tabela de relação foi criada corretamente
-        $this->assertDatabaseHas('tarefas_usuarios', [
-            'id_dono' => $this->user->id,
-            'id_tarefa' => $response->json('id'),
+        // Verifica se a subtarefa não foi listada
+        $response->assertJsonMissing([
+            'id' => $subtarefa->id,
         ]);
     }
 

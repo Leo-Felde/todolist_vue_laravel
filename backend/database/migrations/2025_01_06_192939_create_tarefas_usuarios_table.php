@@ -12,7 +12,7 @@ class CreateTarefasUsuariosTable extends Migration
             $table->id();
             $table->foreignId('id_dono')->constrained('usuarios')->onDelete('cascade');
             $table->foreignId('id_tarefa')->constrained('tarefas')->onDelete('cascade'); 
-            $table->integer('colaboradores')->nullable()->default(null);
+            $table->json('colaboradores')->nullable();
             $table->timestamps();
         });
     }

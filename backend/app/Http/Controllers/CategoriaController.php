@@ -28,11 +28,10 @@ class CategoriaController extends Controller
     }
 
     // Carregar uma categoria
-    public function show(Categoria $categoria)
+    public function show($id)
     {
-        return response()->json($categoria);
+        return Categoria::findOrFail($id);
     }
-
     // Atualizar categoria
     public function update(Request $request, Categoria $categoria)
     {

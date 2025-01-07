@@ -30,6 +30,19 @@ class SubTarefaController extends Controller
         return SubTarefa::findOrFail($id);
     }
 
+    public function getBydIdTarefa($id_tarefa)
+    {
+        $tarefa = SubTarefa::where('id_tarefa', $id_tarefa)->first();
+
+        if (!$tarefa) {
+            return response()->json(['error' => 'Tarefa não possui subtarefas'], 404);
+        }
+        
+        $subTarefas = \App\Models\Tarefa::whereIn('id', $tarefa->id_subtarefas)->get();
+
+        return response()->json($subTarefas, 200);
+    }
+
     public function update(Request $request, $id)
     {
         $validated = $request->validate([

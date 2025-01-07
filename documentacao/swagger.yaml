@@ -16,6 +16,25 @@ components:
       bearerFormat: JWT
 
   schemas:
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "ID do usuário"
+          example: 1
+        nome:
+          type: string
+          description: "Nome do usuário"
+          example: "João Silva"
+        email:
+          type: string
+          description: "E-mail do usuário"
+          example: "joao.silva@example.com"
+      required:
+        - id
+        - nome
+        - email
     Tarefa:
       type: object
       properties:
@@ -270,6 +289,65 @@ paths:
           description: Tarefa excluída com sucesso
         '404':
           description: Tarefa não encontrada
+
+  /tarefas/{id}/subtarefas:
+    get:
+      summary: "Obter subtarefas de uma tarefa"
+      tags:
+        - Tarefas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da tarefa
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: "Subtarefas encontradas com sucesso"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tarefa'
+        '404':
+          description: "Tarefa não possui subtarefas"
+  /tarefas/{id}/colaboradores:
+    get:
+      summary: "Obter colaboradores de uma tarefa"
+      tags:
+        - Tarefas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da tarefa
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: "Colaboradores encontrados com sucesso"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        '404':
+          description: "Nenhum colaborador encontrado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Nenhum colaborador encontrado"
 
   /subtarefas:
     get:

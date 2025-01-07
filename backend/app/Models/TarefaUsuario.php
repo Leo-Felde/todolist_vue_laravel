@@ -17,6 +17,10 @@ class TarefaUsuario extends Model
         'colaboradores',
     ];
 
+    protected $casts = [
+        'colaboradores' => 'array',
+    ];
+
     public function dono()
     {
         return $this->belongsTo(Usuario::class, 'id_dono');
