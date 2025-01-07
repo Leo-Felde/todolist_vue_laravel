@@ -52,9 +52,9 @@ class TarefaController extends Controller
     }
 
     // Carregar uma tarefa
-    public function show(Tarefa $tarefa)
+    public function show($id)
     {
-        return $tarefa;
+        return Tarefa::findOrFail($id);
     }
 
     // Atualizar tarefa

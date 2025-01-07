@@ -134,4 +134,40 @@ class SubTarefaControllerTest extends TestCase
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(['id_subtarefas']);
     }
+
+    #[Test]
+    #[Covers(\App\Http\Controllers\SubTarefaController::class)]
+    public function test_get_by_id_tarefa_returns_subtarefas_when_found()
+    {
+        // Mock da tarefa e subtarefas
+        $tarefa = Tarefa::factory()->create();
+        $tarefa2 = Tarefa::factory()->create();
+        $tarefa3 = Tarefa::factory()->create();
+
+        $subTarefa = SubTarefa::create(['id_tarefa' => $tarefa->id, 'id_subtarefas' => [$tarefa2->id, $tarefa3->id]]);
+
+        // Realizando a requisição para o método
+        $response = $this->getJson("/api/tarefa/{$tarefa->id}/subtarefas");
+
+        // Verificar se o código de status é 200
+        $response->assertStatus(200);
+
+        $response->assertJsonFragment(['descricao' => $tarefa2->descricao]);
+        $response->assertJsonFragment(['descricao' => $tarefa3->descricao]);
+    }
+
+    #[Test]
+    #[Covers(\App\Http\Controllers\SubTarefaController::class)]
+    public function test_get_by_id_tarefa_returns_error_when_no_subtarefas()
+    {
+        // Criação de uma tarefa sem subtarefas
+        $tarefa = Tarefa::factory()->create();
+
+        // Realizando a requisição para o método
+        $response = $this->getJson("/api/tarefa/{$tarefa->id}/subtarefas");
+
+        // Verifica se retornou 404
+        $response->assertStatus(404);
+        $response->assertJson(['error' => 'Tarefa não possui subtarefas']);
+    }
 }
