@@ -1,1 +1,46 @@
 // app global css in Sass form
+.d-flex
+  display: flex
+.flex-column
+  flex-direction: column
+.justify-start
+  justify-content: start
+.min-content
+  width: min-content
+
+body
+  &.body
+    &--dark
+      .q-checkbox
+        &__inner
+          color: #f5f5f5 !important
+        &__svg
+          color: #1976D2
+      .q-field__suffix 
+        color: white !important
+      .sticky-header
+        .q-table__top,
+        .q-table__bottom,
+        thead tr:first-child th
+          background-color: var(--q-dark)
+      tr
+        border-color: rgba(255, 255, 255, 0.28)
+      .q-field--standout input, .q-field__append, .q-field__prepend, .q-placeholder, .q-field__native
+        color: white !important
+      .q-field--standout .q-field__control
+        background: #464646a3 !important
+    &--light
+      background: #f4f4f4
+      .q-field__suffix 
+        color: black !important
+      .sticky-header
+        .q-table__top,
+        .q-table__bottom,
+        thead tr:first-child th
+          background-color: white
+      tr
+        border-color: rgba(0, 0, 0, 0.12)
+      .q-field--standout input, .q-field__append, .q-field__prepend, .q-placeholder, .q-field__native
+        color: black !important
+      .q-field--standout .q-field__control
+        background: #e7e7e7a3 !important
