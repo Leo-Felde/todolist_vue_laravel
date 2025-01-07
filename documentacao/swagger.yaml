@@ -1,0 +1,482 @@
+openapi: 3.0.0
+info:
+  title: API Todo List
+  version: 1.0.0
+  description: Documentação da API Restful para Lista de Tarefas feita em PHP Laravel.
+
+servers:
+  - url: http://localhost:8000
+    description: Servidor local
+
+components:
+  securitySchemes:
+    SanctumAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Tarefa:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID da tarefa
+        titulo:
+          type: string
+          description: Título da tarefa
+        descricao:
+          type: string
+          description: Descrição da tarefa
+        data_conclusao:
+          type: string
+          format: date
+          description: Data de conclusão da tarefa
+        data_prazo:
+          type: string
+          format: date
+          description: Data de prazo da tarefa
+        status:
+          type: string
+          description: Status da tarefa
+        id_categoria:
+          type: integer
+          description: ID da categoria associada à tarefa
+    TarefaCreate:
+      type: object
+      required:
+        - titulo
+        - status
+      properties:
+        titulo:
+          type: string
+          maxLength: 80
+        descricao:
+          type: string
+          maxLength: 200
+        data_conclusao:
+          type: string
+          format: date
+        data_prazo:
+          type: string
+          format: date
+        status:
+          type: string
+          maxLength: 30
+        id_categoria:
+          type: integer
+        colaboradores:
+          type: array
+          items:
+            type: integer
+    TarefaUpdate:
+      type: object
+      properties:
+        titulo:
+          type: string
+          maxLength: 80
+        descricao:
+          type: string
+          maxLength: 200
+        data_conclusao:
+          type: string
+          format: date
+        data_prazo:
+          type: string
+          format: date
+        status:
+          type: string
+          maxLength: 30
+        id_categoria:
+          type: integer
+        colaboradores:
+          type: array
+          items:
+            type: integer
+
+    SubTarefa:
+      type: object
+      properties:
+        id:
+          type: integer
+        id_tarefa:
+          type: integer
+          description: ID da tarefa associada
+        id_subtarefas:
+          type: array
+          items:
+            type: integer
+          description: IDs das subtarefas
+
+    SubTarefaCreate:
+      type: object
+      required:
+        - id_tarefa
+        - id_subtarefas
+      properties:
+        id_tarefa:
+          type: integer
+          description: ID da tarefa associada
+        id_subtarefas:
+          type: array
+          items:
+            type: integer
+          description: IDs das subtarefas
+
+    Categoria:
+      type: object
+      properties:
+        id:
+          type: integer
+        titulo:
+          type: string
+          maxLength: 30
+          description: Título da categoria
+        descricao:
+          type: string
+          maxLength: 50
+          description: Descrição da categoria
+        cor:
+          type: string
+          description: Cor no formato hexadecimal (e.g., #FFFFFF)
+          pattern: '^#[A-Fa-f0-9]{6}$'
+
+    CategoriaCreate:
+      type: object
+      required:
+        - titulo
+        - descricao
+        - cor
+      properties:
+        titulo:
+          type: string
+          maxLength: 30
+        descricao:
+          type: string
+          maxLength: 50
+        cor:
+          type: string
+          description: Cor no formato hexadecimal (e.g., #FFFFFF)
+          pattern: '^#[A-Fa-f0-9]{6}$'
+
+security:
+  - SanctumAuth: []
+
+paths:
+  /tarefas:
+    get:
+      summary: Lista todas as tarefas
+      tags:
+        - Tarefas
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Lista de tarefas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tarefa'
+    post:
+      summary: Cria uma nova tarefa
+      tags:
+        - Tarefas
+      security:
+        - SanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TarefaCreate'
+      responses:
+        '201':
+          description: Tarefa criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarefa'
+        '500':
+          description: Erro ao criar a tarefa
+
+  /tarefas/{id}:
+    get:
+      summary: Obtém os detalhes de uma tarefa
+      tags:
+        - Tarefas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da tarefa
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Detalhes da tarefa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarefa'
+        '404':
+          description: Tarefa não encontrada
+    put:
+      summary: Atualiza os dados de uma tarefa
+      tags:
+        - Tarefas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da tarefa
+      security:
+        - SanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TarefaUpdate'
+      responses:
+        '200':
+          description: Tarefa atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarefa'
+        '500':
+          description: Erro ao atualizar a tarefa
+    delete:
+      summary: Exclui uma tarefa
+      tags:
+        - Tarefas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da tarefa
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Tarefa excluída com sucesso
+        '404':
+          description: Tarefa não encontrada
+
+  /subtarefas:
+    get:
+      summary: Lista todas as subtarefas
+      tags:
+        - SubTarefas
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Lista de subtarefas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubTarefa'
+    post:
+      summary: Cria uma nova subtarefa
+      tags:
+        - SubTarefas
+      security:
+        - SanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubTarefaCreate'
+      responses:
+        '201':
+          description: Subtarefa criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubTarefa'
+
+  /subtarefas/{id}:
+    get:
+      summary: Obtém os detalhes de uma subtarefa
+      tags:
+        - SubTarefas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da subtarefa
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Detalhes da subtarefa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubTarefa'
+        '404':
+          description: Subtarefa não encontrada
+    put:
+      summary: Atualiza uma subtarefa
+      tags:
+        - SubTarefas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da subtarefa
+      security:
+        - SanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubTarefaCreate'
+      responses:
+        '200':
+          description: Subtarefa atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubTarefa'
+
+    delete:
+      summary: Exclui uma subtarefa
+      tags:
+        - SubTarefas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da subtarefa
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Subtarefa excluída com sucesso
+        '404':
+          description: Subtarefa não encontrada
+
+  /categorias:
+    get:
+      summary: Lista todas as categorias
+      tags:
+        - Categorias
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Lista de categorias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Categoria'
+    post:
+      summary: Cria uma nova categoria
+      tags:
+        - Categorias
+      security:
+        - SanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaCreate'
+      responses:
+        '201':
+          description: Categoria criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+
+  /categorias/{id}:
+    get:
+      summary: Obtém os detalhes de uma categoria
+      tags:
+        - Categorias
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Detalhes da categoria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+        '404':
+          description: Categoria não encontrada
+    put:
+      summary: Atualiza uma categoria
+      tags:
+        - Categorias
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+      security:
+        - SanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaCreate'
+      responses:
+        '200':
+          description: Categoria atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+
+    delete:
+      summary: Exclui uma categoria
+      tags:
+        - Categorias
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Categoria excluída com sucesso
+        '404':
+          description: Categoria não encontrada
