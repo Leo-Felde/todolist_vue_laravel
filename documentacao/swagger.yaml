@@ -290,7 +290,7 @@ paths:
         '404':
           description: Tarefa não encontrada
 
-  /tarefa/{id}/subtarefas:
+  /tarefas/{id}/subtarefas:
     get:
       summary: "Obter subtarefas de uma tarefa"
       tags:
@@ -315,7 +315,7 @@ paths:
                   $ref: '#/components/schemas/Tarefa'
         '404':
           description: "Tarefa não possui subtarefas"
-  /tarefa/{id}/colaboradores:
+  /tarefas/{id}/colaboradores:
     get:
       summary: "Obter colaboradores de uma tarefa"
       tags:

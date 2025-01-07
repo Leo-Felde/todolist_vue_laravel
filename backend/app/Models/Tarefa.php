@@ -19,4 +19,9 @@ class Tarefa extends Model
         'status',
         'id_categoria',
     ];
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'id_categoria');
+    }
 }
