@@ -44,7 +44,9 @@ class TarefaUsuarioController extends Controller
             return response()->json(['message' => 'Nenhum colaborador encontrado'], 200);
         }
         
-        $colaboradores = \App\Models\User::whereIn('id', $tarefaUsuario->colaboradores)->get();
+        $colaboradores = \App\Models\User::whereIn('id', $tarefaUsuario->colaboradores)
+            ->select('id', 'nome', 'email')
+            ->get();
 
         return response()->json($colaboradores, 200);
     }
