@@ -17,5 +17,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categorias', CategoriaController::class);
     Route::apiResource('sub-tarefas', SubTarefaController::class);
     Route::apiResource('tarefas', TarefaController::class);
+    Route::get('/tarefa/{id_tarefa}/colaboradores', [TarefaUsuarioController::class, 'getColaboradoresByTarefa']);
 });
 
