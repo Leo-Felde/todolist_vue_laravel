@@ -1,12 +1,18 @@
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/Default.vue'),
     children: [
       {
         path: '',
         name: 'Home',
         component: () => import('pages/IndexPage.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: '/tasks',
+        name: 'TaskList',
+        component: () => import('pages/Tasks.vue'),
         meta: { requiresAuth: true },
       },
     ]
