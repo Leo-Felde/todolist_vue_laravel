@@ -5,10 +5,9 @@ export const rules = ref({
   notZero: value => value > 0 || 'Não deve ser menor que 1.',
   counter: value => value.length <= 20 || 'Max 20 characters.',
   sigla: value => value.length <= 2 || 'Não deve ter mais de 2 caracteres.',
-  limite200: value => value.length <= 30 || 'Não deve ter mais de 200 caracteres.',
-  limite10: value => value.length <= 10 || 'Não deve ter mais de 10 caracteres.',
-  limiteTextarea: value => value ? value.length < 300 || 'Não deve ter mais de 300 caracteres.': true,
-  limiteTextareaMaior: value => value ? value.length < 500 || 'Não deve ter mais de 500 caracteres.': true,
+  limite200: value => value.length <= 200 || 'Não deve ter mais de 200 caracteres.',
+  limite80: value => value.length <= 80 || 'Não deve ter mais de 50 caracteres.',
+  limite50: value => value.length <= 50 || 'Não deve ter mais de 50 caracteres.',
   email: value => {
     const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return value ? pattern.test(value) || 'E-mail inválido.': true

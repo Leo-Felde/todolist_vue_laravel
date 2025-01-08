@@ -1,17 +1,75 @@
 <template>
   <div class="page-container">
     <q-card
-      class="card-elementos q-px-md"
+      class="card-categorias q-px-md"
       flat
     >
-      <!-- a fazer -->
+      <div class="categorias-header d-flex q-my-md"> 
+        <h6 class="q-pa-none q-ma-none">
+          Categorias
+        </h6>
+
+        <q-btn
+          color="primary"
+          class="q-ml-md q-my-auto"
+          rounded
+          style="max-height: 40px;"
+          @click="dialogoCategoria = true"
+        >
+          Nova categoria
+        </q-btn>
+
+        <q-btn
+          class="q-ml-auto q-my-auto"
+          round
+          flat
+          icon="more_vert"
+          style="max-height: 40px;"
+        >
+          <q-menu self="top middle">
+            <q-list style="min-width: 100px">
+              <q-item
+                v-close-popup
+                clickable
+                @click="toggleEditarCategorias"
+              >
+                <q-item-section>Editar categoria</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+
+          <q-tooltip>
+            Ver mais opções
+          </q-tooltip>
+        </q-btn>
+      </div>
+      <div
+        v-if="categorias"
+        class="d-flex flex-column"
+      >
+        <label
+          v-show="editandoCategorias"
+          class="text-caption q-mx-auto"
+        >
+          Clique em uma categoria para editar
+        </label>
+        <div>
+          <ChipCategoria
+            v-for="categoria in categorias"
+            :key="`categoria-${categoria.id}`"
+            :categoria="categoria"
+            @click="editarCategoria"
+          />
+        </div>
+      </div>
     </q-card>
     <q-card
       class="card-tarefas q-px-md q-mt-lg"
       flat
     >
-      <div class="d-flex">
+      <div class="tarefas-header d-flex">
         <q-input
+          v-model="search"
           class="input-pesquisa"
           label="Pesquisar"
           hide-bottom-space
@@ -32,7 +90,7 @@
           rounded
           @click="dialogoTarefa = true"
         >
-          Criar tarefa
+          Nova tarefa
         </q-btn>
       </div>
 
@@ -48,6 +106,12 @@
         </template>
       </div>
     </q-card>
+  
+    <DialogCriarCategoria
+      v-model="dialogoCategoria"
+      :categoria="categoriaEditada"
+      @atualizar="getCategorias(true)"
+    />
 
     <DialogCriarTarefa
       v-model="dialogoTarefa"
@@ -63,23 +127,32 @@ import { defineComponent, onMounted, ref, watch } from 'vue'
 import TarefasApi from '../api/tarefas'
 import CategoriasApi from '../api/categorias'
 
+import ChipCategoria from 'src/components/ChipCategoria.vue'
 import CardTarefa from 'src/components/CardTarefa.vue'
+import DialogCriarCategoria from 'src/components/DialogCriarCategoria.vue'
 import DialogCriarTarefa from 'src/components/DialogCriarTarefa.vue'
+
 import { cloneDeep } from 'lodash-es'
 
 export default defineComponent({
   name: 'ListaTarefas',
 
   components: {
+    ChipCategoria,
     CardTarefa,
+    DialogCriarCategoria,
     DialogCriarTarefa 
   },
 
   setup () {
+    const search = ref(null)
     const tarefas = ref([])
     const categorias = ref([])
     const tarefaEditada = ref({})
+    const categoriaEditada = ref({})
     const dialogoTarefa = ref(false)
+    const dialogoCategoria = ref(false)
+    const editandoCategorias = ref(false)
 
     onMounted(() => {
       getTarefas()
@@ -123,13 +196,34 @@ export default defineComponent({
       dialogoTarefa.value = true
     }
 
+    const editarCategoria = (categoria) => {
+      if (!editandoCategorias.value) return
+
+      categoriaEditada.value = cloneDeep(categoria)
+      dialogoCategoria.value = true
+    }
+
+    const toggleEditarCategorias = () => {
+      editandoCategorias.value = true
+      setTimeout(() => {
+        editandoCategorias.value = false
+      }, 1000 * 5)
+    }
+
     return {
+      search,
+      editandoCategorias,
       dialogoTarefa,
+      dialogoCategoria,
       tarefas,
       categorias,
       getTarefas,
+      getCategorias,
       editarTarefa,
-      tarefaEditada
+      categoriaEditada,
+      tarefaEditada,
+      editarCategoria,
+      toggleEditarCategorias
     }
   }
 })
@@ -153,7 +247,7 @@ export default defineComponent({
   padding: 1rem
   border-radius: 8px
 
-.card-elementos
+.card-categorias
   background-color: #68686814
   width: 35%
   height: 100%

@@ -7,7 +7,7 @@
           label="Título *"
           standout
           maxlength="80"
-          :rules="[rules.obrigatorio]"
+          :rules="[rules.obrigatorio, rules.limite80]"
         />
       </div>
 
