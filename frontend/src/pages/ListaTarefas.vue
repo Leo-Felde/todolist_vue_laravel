@@ -128,12 +128,13 @@
           >
             <span
               v-if="categoriaTarefas === '-1' || !categorias.find(c => c.id === Number(categoriaTarefas))"
-              class="q-my-none q-ml-sm text-h6"
+              class="q-my-none q-ml-md text-h6"
             >
               Sem categoria
             </span>
             <ChipCategoria
               v-else
+              class="q-mt-md q-mb-xs q-ml-md"
               :categoria="categorias.find(c => c.id === Number(categoriaTarefas))"
             />
             <CardTarefa
@@ -374,6 +375,6 @@ export default defineComponent({
   height: 100%
 
 .tarefas-list
-  height: calc(100dvh - 65px)
+  height: calc(100dvh - 82px)
   overflow-y: auto
 </style>

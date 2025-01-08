@@ -1,6 +1,6 @@
 <template>
   <q-card
-    class="q-mx-md q-mb-md card-tarefa"
+    class="q-mx-md q-mb-sm card-tarefa"
     bordered
     flat
     :style="estilosCategoria()"
@@ -193,7 +193,7 @@ export default defineComponent({
       if (props.tarefa.categoria) {
         return `border-left: 5px solid ${props.tarefa.categoria.cor}`
       } else {
-        return 'border-left: none !important'	
+        return 'border-left: 5px solid #aeaeae2b'	
       }
     }
 
@@ -238,6 +238,8 @@ export default defineComponent({
   max-width: 500px
   width: auto
   border-right: none !important
+  border-top-right-radius: 0px
+  border-bottom-right-radius: 0px
 
 .descricao-tarefa
   overflow: hidden

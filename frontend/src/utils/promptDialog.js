@@ -4,7 +4,7 @@ export const showConfirmDialog = (title, message) => {
   return showDialog(title, message, true, { label: 'Confirmar', color: 'primary' })
 }
 
-export const showCustomConfirmDialog = (title, message, ok = { label: 'ok', color: 'primary' }, cancel = { label: 'Cancelar', flat: true, color: 'black' }) => {
+export const showCustomConfirmDialog = (title, message, ok = { label: 'ok', color: 'primary' }, cancel = { label: 'Cancelar', flat: true, color: 'input-text-color' }) => {
   return showDialog(title, message, true, ok, cancel)
 }
 
