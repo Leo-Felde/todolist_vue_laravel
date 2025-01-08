@@ -1,6 +1,7 @@
 # Projeto Todo List com Vue.js 3, Quasar e PHP Laravel
 
 Este projeto tem como objetivo criar uma SPA de lista de tarefas utilizando **Vue.js 3 composition API** com o framework **Quasar VITE** e **PHP Laravel**.
+<p> A documentação do Banco de Dados (MER), Front-end (Design) e Endpoints (swagger) estão presentes na pasta /documentacao </p>
 
 ## Tecnologias utilizadas
 <ul>
