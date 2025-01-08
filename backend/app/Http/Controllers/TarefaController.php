@@ -22,7 +22,7 @@ class TarefaController extends Controller
         $query = Tarefa::whereNotIn('id', $idsSubtarefasArray);
 
         if ($request->filled('titulo')) {
-            $query->where('titulo', 'like', '%' . $request->titulo . '%');
+            $query->where('titulo', 'ILIKE', '%' . $request->titulo . '%');
         }
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -32,6 +32,7 @@ class TarefaController extends Controller
         }
 
         $tarefas = $query->with('categoria')->get();
+        $tarefas = $query->with('categoria')->paginate(20); // paginação max. 20 tarefas por página
 
         $tarefas->each(function ($tarefa) {
             $tarefa->subtarefas = DB::table('sub_tarefas')

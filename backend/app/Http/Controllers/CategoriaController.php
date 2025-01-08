@@ -8,9 +8,16 @@ use Illuminate\Http\Request;
 class CategoriaController extends Controller
 {
     // Listar categorias
-    public function index()
+    public function index(Request $request)
     {
-        $categorias = Categoria::all();
+        $categorias = Categoria::query();
+
+        if ($request->filled('titulo')) {
+            $categorias->where('titulo', 'ILIKE', '%' . $request->titulo . '%');
+        }
+        
+        $categorias = $categorias->get();
+
         return response()->json($categorias);
     }
 
