@@ -4,10 +4,10 @@ const tarefaApi = createApi('/tarefas')
 const subTarefaApi = createApi('/sub-tarefas')
 
 const methods = {
-  getTarefas (page = 1) {
+  getTarefas (params) {
     return tarefaApi.get('', {
       params: {
-        page
+        ...params
       }
     })
   },

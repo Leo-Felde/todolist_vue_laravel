@@ -101,6 +101,8 @@
           standout
           rounded
           style="max-width: 500px;"
+          @keydown.enter="getTarefas"
+          @clear="getTarefas"
         >
           <template #prepend>
             <q-icon name="search" />
@@ -256,7 +258,11 @@ export default defineComponent({
       loadingTarefas.value = true
 
       try {
-        const resp = await TarefasApi.getTarefas(page.value)
+        const params = {
+          page: page.value,
+          titulo: search.value
+        }
+        const resp = await TarefasApi.getTarefas(params)
 
         if (resp.data?.data.length > 0) {
           const groupedTarefas = resp.data.data.reduce((acc, tarefa) => {
