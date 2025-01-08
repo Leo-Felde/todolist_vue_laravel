@@ -9,11 +9,16 @@
   >
     <q-scroll-area class="fit">
       <q-list>
+        <q-item
+          class="q-mt-sm"
+        >
+          <ThemeButton />
+        </q-item>
         <q-item class="d-flex flex-column">
-          <h5 class="q-mt-sm q-mb-none q-mx-auto">
+          <h5 class="q-mt-none q-mb-none q-mx-auto">
             Todo
           </h5>
-          <span class="text-subtitle2 q-ml-auto text-primary">
+          <span class="text-subtitle2 q-mx-auto text-primary">
             <q-icon
               name="fact_check"
               color="primary"
@@ -38,17 +43,6 @@
             />
           </q-item>
         </template>
-        <q-item
-          id="settings-button"
-          v-ripple
-          clickable
-        >
-          <q-icon
-            name="settings"
-            size="md"
-            class="q-mx-auto"
-          />
-        </q-item>
       </q-list>
     </q-scroll-area>
   </q-drawer>
@@ -56,8 +50,14 @@
 
 <script>
 import { onMounted, ref, watch } from 'vue'
+import ThemeButton from '../ThemeButton.vue'
 
 export default {
+  
+  components: {
+    ThemeButton,
+  },
+
   props: {
     modelValue: {
       type: Boolean,

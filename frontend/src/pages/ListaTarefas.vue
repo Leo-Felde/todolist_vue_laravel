@@ -73,7 +73,7 @@
       </div>
     </q-card>
     <q-card
-      class="card-tarefas q-px-md q-mt-lg"
+      class="card-tarefas q-px-md q-pt-lg"
       flat
     >
       <div class="tarefas-header d-flex">
