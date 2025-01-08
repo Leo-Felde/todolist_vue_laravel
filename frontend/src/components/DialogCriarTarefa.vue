@@ -16,7 +16,9 @@
       </q-card-section>
 
       <q-card-section>
-        <FormTarefa v-model="taskData" />
+        <q-form ref="formulario">
+          <FormTarefa v-model="taskData" />
+        </q-form>
       </q-card-section>
 
       <q-card-actions class="d-flex">
@@ -74,6 +76,7 @@ export default {
 
   emits: ['update:modelValue', 'atualizar'],
   setup(props, { emit }) {
+    const formulario = ref()
     const isDialogVisible = ref(props.modelValue)
     const loading = ref(false)
     const taskData = ref({
@@ -119,6 +122,9 @@ export default {
     }
 
     const salvarTarefa = async () => {
+      const valid = await formulario.value.validate()
+      if (!valid) return
+
       loading.value = true
       try {
         if (taskData.value?.id) {
@@ -182,6 +188,7 @@ export default {
     }
 
     return {
+      formulario,
       isDialogVisible,
       taskData,
       loading,

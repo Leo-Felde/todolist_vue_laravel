@@ -16,7 +16,9 @@
       </q-card-section>
 
       <q-card-section>
-        <CategoriaForm v-model="categoryData" />
+        <q-form ref="formulario">
+          <CategoriaForm v-model="categoryData" />
+        </q-form>
       </q-card-section>
 
       <q-card-actions class="d-flex">
@@ -70,6 +72,7 @@ export default {
   },
   emits: ['update:modelValue', 'atualizar'],
   setup(props, { emit }) {
+    const formulario = ref()
     const isDialogVisible = ref(props.modelValue)
     const loading = ref(false)
     const categoryData = ref({
@@ -107,6 +110,9 @@ export default {
     }
 
     const salvarCategoria = async () => {
+      const valid = await formulario.value.validate()
+      if (!valid) return
+
       loading.value = true
       try {
         if (categoryData.value.id) {
@@ -154,6 +160,7 @@ export default {
     }
 
     return {
+      formulario,
       isDialogVisible,
       categoryData,
       loading,
