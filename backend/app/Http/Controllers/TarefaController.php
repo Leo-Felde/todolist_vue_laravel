@@ -32,12 +32,19 @@ class TarefaController extends Controller
         }
 
         $tarefas = $query->with('categoria')->get();
-        $tarefas = $query->with('categoria')->paginate(20); // paginação max. 20 tarefas por página
+        $tarefas = $query->with('categoria')->paginate(20); // paginação max. 20 tarefas
 
         $tarefas->each(function ($tarefa) {
-            $tarefa->subtarefas = DB::table('sub_tarefas')
+            $subtarefas = DB::table('sub_tarefas')
                 ->where('id_tarefa', $tarefa->id)
-                ->get();
+                ->pluck('id_subtarefas')
+                ->map(function ($json) {
+                    return json_decode($json, true); // Decodificar JSON para array
+                })
+                ->flatten()
+                ->toArray();
+        
+            $tarefa->subtarefas = Tarefa::whereIn('id', $subtarefas)->get();
         });
 
         return response()->json($tarefas, 200);
