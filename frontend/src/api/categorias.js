@@ -3,8 +3,8 @@ import { createApi } from './index'
 const categoriaApi = createApi('/categorias')
 
 const methods = {
-  getCategorias () {
-    return categoriaApi.get()
+  getCategorias (params) {
+    return categoriaApi.get(params)
   },
 
   postCategoria (params) {

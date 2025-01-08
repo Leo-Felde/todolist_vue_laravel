@@ -9,13 +9,13 @@
         indeterminate
       />
 
-      <q-card-section>
-        <div class="text-h6">
+      <q-card-section class="q-pb-none">
+        <div class="text-h6 q-py-none">
           {{ taskData.id ? 'Editar' : 'Criar' }} Tarefa
         </div>
       </q-card-section>
 
-      <q-card-section>
+      <q-card-section class="q-pt-none">
         <q-form ref="formulario">
           <FormTarefa v-model="taskData" />
         </q-form>
@@ -126,6 +126,10 @@ export default {
       if (!valid) return
 
       loading.value = true
+      if (taskData.value?.categoria?.id) {
+        taskData.value.id_categoria = taskData.value.categoria.id
+        delete taskData.value.categoria
+      }
       try {
         if (taskData.value?.id) {
           await TarefasApi.putTarefa(taskData.value.id, taskData.value)

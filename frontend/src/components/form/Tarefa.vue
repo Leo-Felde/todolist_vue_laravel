@@ -24,6 +24,12 @@
     </div>
 
     <div class="row q-col-gutter-md">
+      <div class="col-12">
+        <AutocompleteCategoria v-model="form.categoria" />
+      </div>
+    </div>
+
+    <div class="row q-col-gutter-md">
       <div class="col">
         <q-input
           v-model="form.descricao"
@@ -46,16 +52,13 @@
         />
       </div>
       
-      <div
-        v-if="form.data_conclusao"
-        class="q-col-6"
-      >
-        <q-input
+      <div class="q-col-6">
+        <InputDatePicker
           v-model="form.data_conclusao"
           label="Data de Conclusão"
-          readonly
+          :readonly="form.status !== 'concluida'"
+          :min="minDate"
           standout
-          :value="form.data_conclusao || 'N/A'"
         />
       </div>
     </div>
@@ -65,13 +68,17 @@
 <script>
 import { computed, onMounted, ref, watch } from 'vue'
 import { rules } from 'src/utils/validationRules'
+
+import AutocompleteCategoria from '../AutocompleteCategoria.vue'
 import InputDatePicker from '../InputDatePicker.vue'
+
 import { cloneDeep, isEqual } from 'lodash-es'
 
 export default {
   name: 'TaskForm',
 
   components: {
+    AutocompleteCategoria,
     InputDatePicker
   },
 
