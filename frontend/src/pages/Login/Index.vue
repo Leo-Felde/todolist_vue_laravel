@@ -66,12 +66,12 @@
 
         <q-btn
           class="q-mx-auto q-mt-sm" 
-          color="primary"
           flat
           no-caps
-          @click="esqueceuSenha"
+          color="blue"
+          @click="criarconta"
         >
-          Esqueceu a senha?
+          Criar um usuário
         </q-btn>
       </div>
     </q-form>
@@ -150,8 +150,8 @@ export default {
       password.value = null
     }
 
-    const esqueceuSenha = async () => {
-      // A FAZER  
+    const criarconta = async () => {
+      router.push('/criar')
     }
 
     return {
@@ -166,7 +166,7 @@ export default {
       showPassword,
       login,
       cancelar,
-      esqueceuSenha
+      criarconta
     }
   }
 }

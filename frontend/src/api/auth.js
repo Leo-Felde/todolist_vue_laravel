@@ -9,6 +9,12 @@ const methods = {
     })
   },
 
+  criarConta (params) {
+    return axios.post(`${baseUrl}/usuario`, {
+      ...params,
+    })
+  },
+
   logout () {
     return axios.post(`${baseUrl}/logout`)
   }

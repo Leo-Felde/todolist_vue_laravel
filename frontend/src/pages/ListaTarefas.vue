@@ -31,6 +31,7 @@
               <q-item
                 v-close-popup
                 clickable
+                :disable="!categorias.length"
                 @click="toggleEditarCategorias"
               >
                 <q-item-section>Editar categoria</q-item-section>
@@ -53,13 +54,21 @@
         >
           Clique em uma categoria para editar
         </label>
-        <div>
+        <div v-if="categorias.length">
           <ChipCategoria
             v-for="categoria in categorias"
             :key="`categoria-${categoria.id}`"
             :categoria="categoria"
             @click="editarCategoria"
           />
+        </div>
+        <div
+          v-else
+          style="height: 100%;"
+        >
+          <span class="text-caption">
+            Nenhuma categoria encontrada...
+          </span>
         </div>
       </div>
     </q-card>
@@ -104,6 +113,15 @@
             @atualizar="getTarefas(true)"
           />
         </template>
+        <div
+          v-else
+          class="q-mt-md q-ml-md"
+          style="height: 100%;"
+        >
+          <span class="text-caption">
+            Nenhuma tarefa encontrada...
+          </span>
+        </div>
       </div>
     </q-card>
   

@@ -26,6 +26,11 @@ const routes = [
         name: 'Login',
         component: () => import('pages/Login/Index.vue')
       },
+      {
+        path: '/criar',
+        name: 'CriarConta',
+        component: () => import('pages/Login/Criar.vue')
+      },
     ]
   },
 
