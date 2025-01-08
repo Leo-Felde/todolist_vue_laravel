@@ -7,11 +7,18 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Servidor back-end da Lista de Tarefas
+# Projeto Todo List com Vue.js 3, Quasar e PHP Laravel
+Back-end do projeto
+
+## Requisitos
+- [Node.js](https://nodejs.org/en/download)
+- [Composer](https://getcomposer.org/)
+- [PostgreSQL](https://www.postgresql.org/)
+- Servidor PHP (E.g [Apache](https://httpd.apache.org/), [Nginx](https://nginx.org/) ou [Xampp](https://www.apachefriends.org/pt_br/index.html))
+
 ### Instalar dependências
 
    ```bash
-   cd ../backend
 npm install
 composer install
    ```
@@ -23,6 +30,11 @@ Altere os valores conforme a configuração de seu servidor
 ### Criar tabelas no banco de dados
 ```bash
 php artisan migrate  
+```
+
+### Rodar os testes
+```bash
+php artisan test  
 ```
 
 ### Rodar servidor de Desenvolvimento

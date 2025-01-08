@@ -1,33 +1,38 @@
-# Todo List (todo-list)
+# Projeto Todo List com Vue.js 3, Quasar e PHP Laravel
 
-Projeto Todo List utilizando quasar e vue.js 3
+Front-end do projeto
 
-## Install the dependencies
+## Tecnologias utilizadas
+<ul>
+  <li>
+    <a href="https://vuejs.org/guide/introduction.html">Vue.js 3</a>
+  </li>
+  <li>
+    <a href="https://quasar.dev/">Quasar</a>
+  </li>
+  <li>
+    <a href="https://axios-http.com/">Axios</a>
+  </li>
+</ul>
+
+## Requisitos
+- [Node.js](https://nodejs.org/en/download)
+
+## Configurar o ambiente
+Crie uma cópia do arquivo `.env.example` dentro do diretório /frontende renomeie-o para `.env` **(sem .example)** <br>
+Altere os valores das variáveis conforme sua configuração
+
+## Instalar dependências
 ```bash
-yarn
-# or
 npm install
 ```
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
+### Iniciar servidor de desenvolvimento
 ```bash
 quasar dev
 ```
 
-
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-
-
-### Build the app for production
+### Build de produção
 ```bash
 quasar build
 ```
-
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).

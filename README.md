@@ -69,6 +69,11 @@ Abra um terminal no diretório do projeto e digite os seguintes comandos:</br>
 composer run dev
 ```
 
+**Testes do back-end**
+```
+php artisan test  
+```
+
 **Front-end**
 ```
 quasar dev
