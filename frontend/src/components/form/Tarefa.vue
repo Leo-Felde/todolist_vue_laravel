@@ -25,7 +25,10 @@
 
     <div class="row q-col-gutter-md">
       <div class="col-12">
-        <AutocompleteCategoria v-model="form.categoria" />
+        <AutocompleteCategoria
+          v-model="form.categoria"
+          :readonly="subTarefa"
+        />
       </div>
     </div>
 
@@ -93,8 +96,10 @@ export default {
         created_at: '',
         data_conclusao: ''
       })
-    }
+    },
+    subTarefa: Boolean
   },
+  
   emits: ['update:modelValue'],
   setup(props, { emit }) {
     const form = ref({})

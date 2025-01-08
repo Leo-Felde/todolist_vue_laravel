@@ -12,6 +12,7 @@
     eager
     label="Selecione uma categoria"
     clearable
+    :readonly="readonly"
     @input-value="onFilter"
   >
     <template #option="scope">
@@ -54,6 +55,10 @@ export default {
   components: {
     // eslint-disable-next-line vue/no-unused-components
     ChipCategoria
+  },
+
+  props: {
+    readonly: Boolean
   },
 
   setup() {

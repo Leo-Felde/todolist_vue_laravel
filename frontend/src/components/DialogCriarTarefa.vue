@@ -11,13 +11,16 @@
 
       <q-card-section class="q-pb-none">
         <div class="text-h6 q-py-none">
-          {{ taskData.id ? 'Editar' : 'Criar' }} Tarefa
+          {{ getTitulo() }}
         </div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
         <q-form ref="formulario">
-          <FormTarefa v-model="taskData" />
+          <FormTarefa
+            v-model="taskData"
+            :sub-tarefa="!!tarefaPai"
+          />
         </q-form>
       </q-card-section>
 
@@ -58,7 +61,7 @@ import FormTarefa from './form/Tarefa.vue'
 import { showConfirmDelete } from 'src/utils/promptDialog'
 
 export default {
-  name: 'TaskDialog',
+  name: 'TarefaDialog',
   components: {
     FormTarefa
   },
@@ -69,6 +72,10 @@ export default {
       default: false
     },
     tarefa: {
+      type: Object,
+      default: () => {}
+    },
+    tarefaPai: {
       type: Object,
       default: () => {}
     }
@@ -87,9 +94,15 @@ export default {
       created_at: '',
       data_conclusao: ''
     })
-
+    
     watch(() => props.modelValue, (newValue) => {
       isDialogVisible.value = newValue
+    })
+
+    watch(() => props.tarefaPai, (newValue) => {
+      if (newValue.id) {
+        taskData.value.categoria = newValue.categoria
+      }
     })
 
     watch(() => props.tarefa, (newValue) => {
@@ -110,6 +123,10 @@ export default {
     watch(isDialogVisible, (newValue) => {
       emit('update:modelValue', newValue)
     })
+    
+    const getTitulo = () => {
+      return taskData.value.id ? 'Editar Tarefa' : props.tarefaPai?.id ? 'Criar Subtarefa' : 'Criar Tarefa'
+    }
 
     const openDialog = () => {
       isDialogVisible.value = true
@@ -137,9 +154,19 @@ export default {
           notifySuccess('Tarefa editada com sucesso')
           emit('atualizar')
         } else {
-          await TarefasApi.postTarefa(taskData.value)
-          
-          notifySuccess('Tarefa salva com sucesso')
+          const resp = await TarefasApi.postTarefa(taskData.value)          
+          if (props.tarefaPai?.id) {
+            const params = {
+              id_tarefa: props.tarefaPai.id,
+              id_subtarefas: [resp.data.id]
+            }
+
+            await TarefasApi.postSubTarefa(params)
+            notifySuccess('Subtarefa criada com sucesso')
+          } else {
+            notifySuccess('Tarefa criada com sucesso')
+          }
+
           emit('atualizar')
         }
 
@@ -193,6 +220,7 @@ export default {
 
     return {
       formulario,
+      getTitulo,
       isDialogVisible,
       taskData,
       loading,

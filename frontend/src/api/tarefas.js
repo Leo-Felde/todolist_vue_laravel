@@ -1,6 +1,7 @@
 import { createApi } from './index'
 
 const tarefaApi = createApi('/tarefas')
+const subTarefaApi = createApi('/sub-tarefas')
 
 const methods = {
   getTarefas (page = 1) {
@@ -13,6 +14,10 @@ const methods = {
 
   postTarefa (params) {
     return tarefaApi.post('', params)
+  },
+
+  postSubTarefa (params) {
+    return subTarefaApi.post('', params)
   },
 
   getTarefa (id) {

@@ -142,7 +142,9 @@
               :key="`tarefa-${tarefa.id}`"
               :tarefa="tarefa"
               @editar="editarTarefa"
+              @editarSubtarefa="editarSubTarefa"
               @atualizar="getTarefas(true)"
+              @adicionarSubtarefa="criarSubtarefa"
             />
           </div>
         </template>
@@ -176,13 +178,14 @@
     <DialogCriarCategoria
       v-model="dialogoCategoria"
       :categoria="categoriaEditada"
-      @atualizar="getCategorias(true)"
+      @atualizar="getCategorias()"
     />
 
     <DialogCriarTarefa
       v-model="dialogoTarefa"
       :tarefa="tarefaEditada"
-      @atualizar="getTarefas(true)"
+      :tarefa-pai="tarefaPai"
+      @atualizar="getTarefas()"
     />
   </div>
 </template>
@@ -217,6 +220,7 @@ export default defineComponent({
     const categorias = ref([])
     const tarefaEditada = ref({})
     const categoriaEditada = ref({})
+    const tarefaPai = ref({})
 
     // paginação
     const page = ref(1)
@@ -235,13 +239,16 @@ export default defineComponent({
     })
 
     watch(dialogoTarefa, (newValue) => {
-      if (!newValue) tarefaEditada.value = {}
+      if (!newValue) {
+        tarefaEditada.value = {}
+        tarefaPai.value = {}
+      }
     })
     
     const getTarefas = async (resetar = false) => {
       
       if (resetar) {
-        tarefas.value = []
+        // tarefas.value = []
         page.value = 1
         hasMore.value = true
       }
@@ -275,12 +282,8 @@ export default defineComponent({
       }
     }
 
-    const getCategorias = async (resetar = false) => {
+    const getCategorias = async () => {
       loadingCategorias.value = true
-
-      if (resetar) {
-        categorias.value = []
-      }
 
       try {
         const resp = await CategoriasApi.getCategorias()
@@ -297,6 +300,12 @@ export default defineComponent({
       tarefaEditada.value = cloneDeep(tarefa)
       dialogoTarefa.value = true
     }
+    
+    const editarSubTarefa = (subTarefa) => {
+      tarefaEditada.value = cloneDeep(subTarefa)
+      tarefaPai.value = cloneDeep(subTarefa)
+      dialogoTarefa.value = true
+    }
 
     const editarCategoria = (categoria) => {
       if (!editandoCategorias.value) return
@@ -310,6 +319,11 @@ export default defineComponent({
       setTimeout(() => {
         editandoCategorias.value = false
       }, 1000 * 5)
+    }
+
+    const criarSubtarefa = (tarefa) => {
+      tarefaPai.value = cloneDeep(tarefa)
+      dialogoTarefa.value = true
     }
 
     const handleScroll = (event) => {
@@ -331,16 +345,19 @@ export default defineComponent({
       loadingTarefas,
       loadingCategorias,
       tarefas,
+      tarefaPai,
       page,
       hasMore,
       categorias,
       getTarefas,
       getCategorias,
       editarTarefa,
+      editarSubTarefa,
       categoriaEditada,
       tarefaEditada,
       editarCategoria,
       toggleEditarCategorias,
+      criarSubtarefa,
       handleScroll
     }
   }

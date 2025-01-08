@@ -70,15 +70,15 @@ export default {
   setup (props, { emit }) {
     const drawer = ref(props.modelValue)
     const menuList = ref([
-      {
-        icon: 'equalizer',
-        label: 'Início',
-        to: '/'
-      },
+      // {
+      //   icon: 'equalizer',
+      //   label: 'Início',
+      //   to: '/'
+      // },
       {
         icon: 'checklist',
         label: 'Checklist',
-        to: '/tasks'
+        to: '/'
       }
     ])
 

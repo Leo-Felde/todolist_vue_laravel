@@ -3,14 +3,14 @@ const routes = [
     path: '/',
     component: () => import('layouts/Default.vue'),
     children: [
+      // {
+      //   path: '',
+      //   name: 'Home',
+      //   component: () => import('pages/IndexPage.vue'),
+      //   meta: { requiresAuth: true },
+      // },
       {
-        path: '',
-        name: 'Home',
-        component: () => import('pages/IndexPage.vue'),
-        meta: { requiresAuth: true },
-      },
-      {
-        path: '/tasks',
+        path: '/',
         name: 'ListaTarefas',
         component: () => import('pages/ListaTarefas.vue'),
         meta: { requiresAuth: true },

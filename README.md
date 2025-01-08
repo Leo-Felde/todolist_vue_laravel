@@ -21,7 +21,8 @@ Este projeto tem como objetivo criar uma SPA de lista de tarefas utilizando **Vu
 ## Requisitos
 - [Node.js](https://nodejs.org/en/download)
 - [Composer](https://getcomposer.org/)
-- Servidor PHP (E.g [Apache](https://httpd.apache.org/) ou [Nginx](https://nginx.org/))
+- [PostgreSQL](https://www.postgresql.org/)
+- Servidor PHP (E.g [Apache](https://httpd.apache.org/), [Nginx](https://nginx.org/) ou [Xampp](https://www.apachefriends.org/pt_br/index.html))
 
 ## Instalação
 ### instalar dependências
@@ -53,7 +54,8 @@ Tanto no front-end quanto no back-end </br>
 Crie uma cópia do arquivo `.env.example` dentro do diretório /frontend ou /backend e renomeie-o para `.env` **(sem .example)** <br>
 Altere os valores das variáveis conforme necessário
    
-**Criar banco de dados**
+**Criar banco de dados**<br/>
+Para criar as tabelas necessárias rode o comando abaixo na **pasta do back-end**. Certifique-se de ter um banco de dados vazio criado **conforme a configuração do .env**
 ```bash
 php artisan migrate  
 ```
