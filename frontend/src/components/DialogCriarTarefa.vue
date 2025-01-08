@@ -127,7 +127,7 @@ export default {
 
       loading.value = true
       if (taskData.value?.categoria?.id) {
-        taskData.value.id_categoria = taskData.value.categoria.id
+        taskData.value.id_categoria = taskData.value.categoria?.id
         delete taskData.value.categoria
       }
       try {

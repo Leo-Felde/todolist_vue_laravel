@@ -5,7 +5,6 @@
     :loading="isLoading"
     option-value="id"
     option-label="titulo"
-    emit-value
     map-options
     use-input
     standout

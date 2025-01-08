@@ -3,8 +3,12 @@ import { createApi } from './index'
 const tarefaApi = createApi('/tarefas')
 
 const methods = {
-  getTarefas () {
-    return tarefaApi.get()
+  getTarefas (page = 1) {
+    return tarefaApi.get('', {
+      params: {
+        page
+      }
+    })
   },
 
   postTarefa (params) {

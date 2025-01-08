@@ -44,8 +44,22 @@
           </q-tooltip>
         </q-btn>
       </div>
+      <div v-if="loadingCategorias">
+        <q-linear-progress
+          indeterminate
+          class="q-mb-md"
+        />
+        <div class="d-flex">
+          <q-skeleton
+            v-for="i in 3"
+            :key="`skeleton-categoria-${i}`"
+            class="q-mx-sm"
+            type="QChip"
+          />
+        </div>
+      </div>
       <div
-        v-if="categorias"
+        v-else-if="categorias.length"
         class="d-flex flex-column"
       >
         <label
@@ -76,7 +90,7 @@
       class="card-tarefas q-px-md q-pt-lg"
       flat
     >
-      <div class="tarefas-header d-flex">
+      <div class="tarefas-header d-flex q-pb-md">
         <q-input
           v-model="search"
           class="input-pesquisa"
@@ -103,15 +117,33 @@
         </q-btn>
       </div>
 
-      <div>
-        <template v-if="tarefas.length">
-          <CardTarefa
-            v-for="tarefa in tarefas"
-            :key="`tarefa-${tarefa.id}`"
-            :tarefa="tarefa"
-            @editar="editarTarefa"
-            @atualizar="getTarefas(true)"
-          />
+      <div
+        class="tarefas-list"
+        @scroll="handleScroll"
+      >
+        <template v-if="tarefas">
+          <div
+            v-for="categoriaTarefas in Object.keys(tarefas)"
+            :key="`categoriaTarefa-${categoriaTarefas}`"
+          >
+            <span
+              v-if="categoriaTarefas === '-1' || !categorias.find(c => c.id === Number(categoriaTarefas))"
+              class="q-my-none q-ml-sm text-h6"
+            >
+              Sem categoria
+            </span>
+            <ChipCategoria
+              v-else
+              :categoria="categorias.find(c => c.id === Number(categoriaTarefas))"
+            />
+            <CardTarefa
+              v-for="tarefa in tarefas[categoriaTarefas]"
+              :key="`tarefa-${tarefa.id}`"
+              :tarefa="tarefa"
+              @editar="editarTarefa"
+              @atualizar="getTarefas(true)"
+            />
+          </div>
         </template>
         <div
           v-else
@@ -121,6 +153,21 @@
           <span class="text-caption">
             Nenhuma tarefa encontrada...
           </span>
+        </div>
+        <div v-if="loadingTarefas">
+          <q-linear-progress
+            indeterminate
+            class="q-mb-md"
+          />
+          <div class="d-flex flex-column">
+            <q-skeleton
+              v-for="i in 3"
+              :key="`skeleton-tarefa-${i}`"
+              class="q-my-sm"
+              width="500px"
+              height="150px"
+            />
+          </div>
         </div>
       </div>
     </q-card>
@@ -164,10 +211,19 @@ export default defineComponent({
 
   setup () {
     const search = ref(null)
+
     const tarefas = ref([])
     const categorias = ref([])
     const tarefaEditada = ref({})
     const categoriaEditada = ref({})
+
+    // paginação
+    const page = ref(1)
+    const hasMore = ref(true)
+
+    const loadingTarefas = ref(false)
+    const loadingCategorias = ref(false)
+
     const dialogoTarefa = ref(false)
     const dialogoCategoria = ref(false)
     const editandoCategorias = ref(false)
@@ -182,20 +238,45 @@ export default defineComponent({
     })
     
     const getTarefas = async (resetar = false) => {
+      
       if (resetar) {
         tarefas.value = []
+        page.value = 1
+        hasMore.value = true
       }
+      if (!hasMore.value) return
+      loadingTarefas.value = true
 
       try {
-        const resp = await TarefasApi.getTarefas()
+        const resp = await TarefasApi.getTarefas(page.value)
 
-        tarefas.value = resp.data
+        if (resp.data?.data.length > 0) {
+          const groupedTarefas = resp.data.data.reduce((acc, tarefa) => {
+            const categoria = tarefa.categoria?.id || -1
+            if (!acc[categoria]) {
+              acc[categoria] = []
+            }
+            acc[categoria].push(tarefa)
+            return acc
+          }, {})
+
+          tarefas.value = resetar
+            ? groupedTarefas
+            : { ...tarefas.value, ...groupedTarefas }
+          page.value += 1
+        } else {
+          hasMore.value = false
+        }
       } catch (err) {
         console.error(err)
+      } finally {
+        loadingTarefas.value = false
       }
     }
 
     const getCategorias = async (resetar = false) => {
+      loadingCategorias.value = true
+
       if (resetar) {
         categorias.value = []
       }
@@ -206,6 +287,8 @@ export default defineComponent({
         categorias.value = resp.data
       } catch (err) {
         console.error(err)
+      } finally {
+        loadingCategorias.value = false
       }
     }
 
@@ -228,12 +311,27 @@ export default defineComponent({
       }, 1000 * 5)
     }
 
+    const handleScroll = (event) => {
+      const container = event.target
+      const nearBottom =
+      container.scrollHeight - container.scrollTop <=
+      container.clientHeight * 1.5
+
+      if (nearBottom) {
+        getTarefas()
+      }
+    }
+
     return {
       search,
       editandoCategorias,
       dialogoTarefa,
       dialogoCategoria,
+      loadingTarefas,
+      loadingCategorias,
       tarefas,
+      page,
+      hasMore,
       categorias,
       getTarefas,
       getCategorias,
@@ -241,7 +339,8 @@ export default defineComponent({
       categoriaEditada,
       tarefaEditada,
       editarCategoria,
-      toggleEditarCategorias
+      toggleEditarCategorias,
+      handleScroll
     }
   }
 })
@@ -274,4 +373,7 @@ export default defineComponent({
   width: 65%
   height: 100%
 
+.tarefas-list
+  height: calc(100dvh - 65px)
+  overflow-y: auto
 </style>

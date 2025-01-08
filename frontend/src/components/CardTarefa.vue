@@ -1,7 +1,9 @@
 <template>
   <q-card
-    class="q-ma-md card-tarefa"
+    class="q-mx-md q-mb-md card-tarefa"
     bordered
+    flat
+    :style="estilosCategoria()"
   >
     <q-card-section class="q-pb-none">
       <div
@@ -187,13 +189,22 @@ export default defineComponent({
       }
     }
 
+    const estilosCategoria = () => {
+      if (props.tarefa.categoria) {
+        return `border-left: 5px solid ${props.tarefa.categoria.cor}`
+      } else {
+        return 'border-left: none !important'	
+      }
+    }
+
     return {
       concluida,
       statusTextoCor,
       statusCor,
       formatarData,
       concluirTarefa,
-      excluirTarefa
+      excluirTarefa,
+      estilosCategoria
     }
   }
 })
@@ -226,6 +237,7 @@ export default defineComponent({
 .card-tarefa
   max-width: 500px
   width: auto
+  border-right: none !important
 
 .descricao-tarefa
   overflow: hidden
