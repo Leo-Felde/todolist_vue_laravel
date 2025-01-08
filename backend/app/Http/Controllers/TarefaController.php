@@ -22,7 +22,7 @@ class TarefaController extends Controller
         $query = Tarefa::whereNotIn('id', $idsSubtarefasArray);
 
         if ($request->filled('titulo')) {
-            $query->where('titulo', 'like', '%' . $request->titulo . '%');
+            $query->where('titulo', 'ILIKE', '%' . $request->titulo . '%');
         }
         if ($request->filled('status')) {
             $query->where('status', $request->status);
