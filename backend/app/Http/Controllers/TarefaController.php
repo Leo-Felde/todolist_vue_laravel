@@ -117,6 +117,7 @@ class TarefaController extends Controller
                 }
             }
             
+            DB::commit();
             return response()->json($tarefa, 200);
         } catch (\Exception $e) {
             DB::rollBack();
