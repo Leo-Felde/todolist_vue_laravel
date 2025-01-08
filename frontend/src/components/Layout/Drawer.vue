@@ -5,12 +5,10 @@
     side="left"
     behavior="desktop"
     bordered
-    width="100"
+    :width="100"
   >
     <q-scroll-area class="fit">
-      <q-list
-        :key="refresh"
-      >
+      <q-list>
         <q-item class="d-flex flex-column">
           <h5 class="q-mt-sm q-mb-none q-mx-auto">
             Todo

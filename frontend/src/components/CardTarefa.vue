@@ -4,50 +4,88 @@
     bordered
   >
     <q-card-section>
-      <div class="text-h6">
-        {{ tarefa.titulo }}
-      </div>
-      <div class="text-subtitle2 q-mt-sm">
-        {{ tarefa.descricao }}
-      </div>
-    </q-card-section>
-
-    <q-separator />
-
-    <q-card-section>
-      <div>
-        <strong>Data:</strong> 
-        <span v-if="tarefa.data_conclusao">
-          {{ formatarData(tarefa.data_conclusao) }} (Concluída)
-        </span>
-        <span v-else-if="tarefa.data_prazo">
-          {{ formatarData(tarefa.data_prazo) }} (Prazo)
-        </span>
-        <span v-else>
-          Não informado
-        </span>
-      </div>
-
-      <div class="q-mt-sm">
-        <strong>Status:</strong>
+      <div
+        class="q-mt-sm task-status"
+      >
+        <label class="tarefa-data-criacao"> Criada {{ formatarData(tarefa.created_at) }}</label>
         <q-chip 
           :color="statusCor"
           :text-color="statusTextoCor"
-          outline
           class="q-ml-sm"
         >
           {{ tarefa.status }}
         </q-chip>
       </div>
+
+      <q-checkbox
+        v-model="concluida"
+        :color="concluida === true || concluida === false ? 'primary' : 'red'"
+        :disable="concluida"
+        indeterminate-icon="block"
+        class="text-h6"
+        :label="tarefa.titulo"
+        @update:model-value="concluirTarefa"
+      />
+
+      <div class="text-subtitle2 q-mt-sm">
+        {{ tarefa.descricao }}
+      </div>
+    </q-card-section>
+
+    <q-card-section>
+      <div>
+        <span v-if="tarefa.data_conclusao">
+          <q-icon
+            name="event_available"
+            size="sm"
+          />
+          {{ formatarData(tarefa.data_conclusao) }}
+        </span>
+        <span v-else-if="tarefa.data_prazo">
+          <q-icon
+            name="alarm"
+            size="sm"
+          />
+          {{ formatarData(tarefa.data_prazo) }}
+          <q-tooltip>
+            Prazo
+          </q-tooltip>
+        </span>
+      </div>
+    </q-card-section>
+    <q-card-section
+      v-if="concluida === false"
+      class="d-flex"
+    >
+      <q-btn
+        round
+        flat
+        icon="delete"
+        color="red"
+        class="q-ml-auto"
+        @click="excluirTarefa"
+      />
+
+      <q-btn
+        round
+        flat
+        icon="edit"
+        color="green"
+        @click="$emit('editar', tarefa)"
+      />
     </q-card-section>
   </q-card>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { showCustomConfirmDialog } from 'src/utils/promptDialog'
+import { computed, defineComponent, onMounted, ref } from 'vue'
+
+import TarefasApi from 'src/api/tarefas'
+import { notifyError, notifySuccess } from 'src/utils/notify'
 
 export default defineComponent({
-  name: 'TaskCard',
+  name: 'CardTarefa',
 
   props: {
     tarefa: {
@@ -60,13 +98,24 @@ export default defineComponent({
     }
   },
 
-  computed: {
-    statusCor() {
-      switch (this.tarefa.status) {
+  emits: ['atualizar', 'editar'],
+  setup (props, { emit }) {
+    const concluida = ref(false)
+
+    onMounted(() => {
+      concluida.value = statusConclusao()
+    })
+
+    const statusTextoCor = computed(() => {
+      return props.tarefa.status === 'pendente' || props.tarefa.status === 'cancelada'
+        ? 'black'
+        : 'white'
+    })
+
+    const statusCor = computed(() => {
+      switch (props.tarefa.status) {
       case 'pendente':
         return 'yellow'
-      case 'iniciada':
-        return 'blue'
       case 'concluida':
         return 'green'
       case 'cancelada':
@@ -74,18 +123,82 @@ export default defineComponent({
       default:
         return 'grey'
       }
-    },
-    statusTextoCor() {
-      return this.tarefa.status === 'pendente' || this.tarefa.status === 'cancelada'
-        ? 'black'
-        : 'white'
-    }
-  },
+    })
 
-  methods: {
-    formatarData(data) {
+    const statusConclusao = (() => {
+      switch (props.tarefa.status) {
+      case 'pendente':
+        return false
+      case 'concluida':
+        return true
+      case 'cancelada':
+        return null
+      default:
+        return null
+      }
+    })
+
+    const formatarData = (data) => {
       const opcoes = { year: 'numeric', month: 'long', day: 'numeric' }
       return new Date(data).toLocaleDateString('pt-BR', opcoes)
+    }
+
+    const concluirTarefa = async () => {
+      let action = 'Concluir'
+      if (concluida.value)  {// foi direto para true portando veio de null (cancelada)
+        concluida.value = null
+        action = 'Reabrir a'
+      }
+      const options = {
+        ok: { label: `${action} tarefa`, color: 'primary' },
+      }
+
+      const confirm = await showCustomConfirmDialog(`${action} tarefa`, 'Concluir a tarefa selecionada?', options.ok)
+      if (!confirm) {
+        concluida.value = false
+      }      
+
+      try {
+        await TarefasApi.putTarefa(props.tarefa.id, { 'status': concluida.value ? 'concluida' : 'pendente' })
+
+        notifySuccess('Tarefa concluída')
+        emit('atualizar')
+      } catch (error) {
+        console.error(error)
+        notifyError('Não foi possível concluir a tarefa')
+      }
+    }
+
+    const excluirTarefa = async () => {
+      const options = {
+        ok: { label: 'Cancelar tarefa', color: 'primary' },
+      }
+
+      const confirm = await showCustomConfirmDialog('Cancelar Tarefa', 'Cancelar a tarefa selecionada?', options.ok)
+      if (!confirm) {
+        concluida.value = false
+        return
+      }      
+      concluida.value = null
+
+      try {
+        await TarefasApi.putTarefa(props.tarefa.id, { 'status': 'cancelada' })
+
+        notifySuccess('Tarefa cancelada')
+        // emit('atualizar')
+      } catch (error) {
+        console.error(error)
+        notifyError('Não foi possível cancelar a tarefa')
+      }
+    }
+
+    return {
+      concluida,
+      statusTextoCor,
+      statusCor,
+      formatarData,
+      concluirTarefa,
+      excluirTarefa
     }
   }
 })
@@ -99,4 +212,19 @@ export default defineComponent({
   font-size: 14px
   color: #757575
 
+.task-status
+  display: flex
+  flex-direction: column
+  position: absolute
+  top: 0px
+  right: 15px
+  margin-top: 0px
+
+.tarefa-data-criacao
+  font-size: 0.7rem
+  margin-top: 8px
+
+.q-chip
+  max-width: fit-content
+  margin-left: auto
 </style>
