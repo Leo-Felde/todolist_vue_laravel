@@ -147,7 +147,7 @@ class SubTarefaControllerTest extends TestCase
         $subTarefa = SubTarefa::create(['id_tarefa' => $tarefa->id, 'id_subtarefas' => [$tarefa2->id, $tarefa3->id]]);
 
         // Realizando a requisição para o método
-        $response = $this->getJson("/api/tarefa/{$tarefa->id}/subtarefas");
+        $response = $this->getJson("/api/tarefas/{$tarefa->id}/subtarefas");
 
         // Verificar se o código de status é 200
         $response->assertStatus(200);
@@ -164,7 +164,7 @@ class SubTarefaControllerTest extends TestCase
         $tarefa = Tarefa::factory()->create();
 
         // Realizando a requisição para o método
-        $response = $this->getJson("/api/tarefa/{$tarefa->id}/subtarefas");
+        $response = $this->getJson("/api/tarefas/{$tarefa->id}/subtarefas");
 
         // Verifica se retornou 404
         $response->assertStatus(404);

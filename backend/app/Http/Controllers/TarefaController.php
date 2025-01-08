@@ -14,32 +14,32 @@ class TarefaController extends Controller
     // Listar tarefas
     public function index(Request $request)
     {
-    $idsSubtarefas = DB::table('sub_tarefas')->pluck('id_subtarefas');
-    $idsSubtarefasArray = $idsSubtarefas->map(function ($json) {
-        return json_decode($json); // Decodificando o JSON para array
-    })->flatten()->toArray();
-    
-    $query = Tarefa::whereNotIn('id', $idsSubtarefasArray);
+        $idsSubtarefas = DB::table('sub_tarefas')->pluck('id_subtarefas');
+        $idsSubtarefasArray = $idsSubtarefas->map(function ($json) {
+            return json_decode($json); // Decodificando o JSON para array
+        })->flatten()->toArray();
+        
+        $query = Tarefa::whereNotIn('id', $idsSubtarefasArray);
 
-    if ($request->filled('titulo')) {
-        $query->where('titulo', 'like', '%' . $request->titulo . '%');
-    }
-    if ($request->filled('status')) {
-        $query->where('status', $request->status);
-    }
-    if ($request->filled('id_categoria')) {
-        $query->where('id_categoria', $request->id_categoria);
-    }
+        if ($request->filled('titulo')) {
+            $query->where('titulo', 'like', '%' . $request->titulo . '%');
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('id_categoria')) {
+            $query->where('id_categoria', $request->id_categoria);
+        }
 
-    $tarefas = $query->get();
+        $tarefas = $query->with('categoria')->get();
 
-    $tarefas->each(function ($tarefa) {
-        $tarefa->subtarefas = DB::table('sub_tarefas')
-            ->where('id_tarefa', $tarefa->id)
-            ->get();
-    });
+        $tarefas->each(function ($tarefa) {
+            $tarefa->subtarefas = DB::table('sub_tarefas')
+                ->where('id_tarefa', $tarefa->id)
+                ->get();
+        });
 
-    return response()->json($tarefas, 200);
+        return response()->json($tarefas, 200);
     }
 
     // Criar nova tarefa
@@ -80,7 +80,7 @@ class TarefaController extends Controller
     public function show($id)
     {
         $tarefa = Tarefa::with('categoria')
-        ->findOrFail($id);
+            ->findOrFail($id);
 
         return response()->json($tarefa, 200);
     }
