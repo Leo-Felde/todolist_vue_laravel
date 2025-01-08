@@ -29,7 +29,7 @@ class TarefaUsuarioControllerTest extends TestCase
     public function test_get_colaboradores_by_tarefa_returns_404_when_tarefa_not_found()
     {
         // Tenta acessar uma tarefa inexistente
-        $response = $this->getJson('/api/tarefa/9999/colaboradores');
+        $response = $this->getJson('/api/tarefas/9999/colaboradores');
 
         // Verifica se retorna um erro 404
         $response->assertStatus(404)
@@ -50,7 +50,7 @@ class TarefaUsuarioControllerTest extends TestCase
         ]);
 
         // Acessa a tarefa para buscar colaboradores
-        $response = $this->getJson("/api/tarefa/{$tarefaUsuario->id_tarefa}/colaboradores");
+        $response = $this->getJson("/api/tarefas/{$tarefaUsuario->id_tarefa}/colaboradores");
 
         // Verifica se a resposta contém a mensagem de "nenhum colaborador encontrado"
         $response->assertStatus(200)
@@ -76,7 +76,7 @@ class TarefaUsuarioControllerTest extends TestCase
         ]);
 
         // Acessa a tarefa para buscar colaboradores
-        $response = $this->getJson("/api/tarefa/{$tarefa->id}/colaboradores");
+        $response = $this->getJson("/api/tarefas/{$tarefa->id}/colaboradores");
 
         // Verifica se os colaboradores são retornados corretamente
         $response->assertStatus(200)
