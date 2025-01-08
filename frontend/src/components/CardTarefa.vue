@@ -1,9 +1,9 @@
 <template>
   <q-card
-    class="q-ma-md"
+    class="q-ma-md card-tarefa"
     bordered
   >
-    <q-card-section>
+    <q-card-section class="q-pb-none">
       <div
         class="q-mt-sm task-status"
       >
@@ -27,12 +27,12 @@
         @update:model-value="concluirTarefa"
       />
 
-      <div class="text-subtitle2 q-mt-sm">
+      <div class="text-subtitle2 descricao-tarefa q-mt-sm">
         {{ tarefa.descricao }}
       </div>
     </q-card-section>
 
-    <q-card-section>
+    <q-card-section class="q-pb-none">
       <div>
         <span v-if="tarefa.data_conclusao">
           <q-icon
@@ -222,4 +222,18 @@ export default defineComponent({
 .q-chip
   max-width: fit-content
   margin-left: auto
+
+.card-tarefa
+  max-width: 500px
+  width: auto
+
+.descricao-tarefa
+  overflow: hidden
+  text-overflow: ellipsis
+
+:deep(.q-checkbox__label)
+  max-width: 326px !important
+  overflow: hidden
+  text-overflow: ellipsis
+  max-height: 30px 
 </style>

@@ -5,7 +5,7 @@ export const rules = ref({
   notZero: value => value > 0 || 'Não deve ser menor que 1.',
   counter: value => value.length <= 20 || 'Max 20 characters.',
   sigla: value => value.length <= 2 || 'Não deve ter mais de 2 caracteres.',
-  limite30: value => value.length <= 30 || 'Não deve ter mais de 30 caracteres.',
+  limite200: value => value.length <= 30 || 'Não deve ter mais de 200 caracteres.',
   limite10: value => value.length <= 10 || 'Não deve ter mais de 10 caracteres.',
   limiteTextarea: value => value ? value.length < 300 || 'Não deve ter mais de 300 caracteres.': true,
   limiteTextareaMaior: value => value ? value.length < 500 || 'Não deve ter mais de 500 caracteres.': true,

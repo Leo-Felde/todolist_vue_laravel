@@ -6,6 +6,7 @@
           v-model="form.titulo"
           label="Título *"
           standout
+          maxlength="80"
           :rules="[rules.obrigatorio]"
         />
       </div>
@@ -29,7 +30,9 @@
           label="Descrição *"
           type="textarea"
           standout
-          :rules="[rules.obrigatorio]"
+          counter
+          maxlength="200"
+          :rules="[rules.obrigatorio, rules.limite200]"
         />
       </div>
     </div>
