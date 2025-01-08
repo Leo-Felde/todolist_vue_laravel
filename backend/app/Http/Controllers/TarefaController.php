@@ -32,6 +32,7 @@ class TarefaController extends Controller
         }
 
         $tarefas = $query->with('categoria')->get();
+        $tarefas = $query->with('categoria')->paginate(20); // paginação max. 20 tarefas por página
 
         $tarefas->each(function ($tarefa) {
             $tarefa->subtarefas = DB::table('sub_tarefas')
