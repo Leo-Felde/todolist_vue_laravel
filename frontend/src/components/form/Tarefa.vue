@@ -15,7 +15,7 @@
           v-model="form.status"
           label="Status *"
           standout
-          readonly
+          emit-value
           :options="statusOptions"
           :rules="[rules.obrigatorio]"
         />

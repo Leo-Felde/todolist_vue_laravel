@@ -53,11 +53,9 @@
         </span>
       </div>
     </q-card-section>
-    <q-card-section
-      v-if="concluida === false"
-      class="d-flex"
-    >
+    <q-card-section class="d-flex">
       <q-btn
+        v-show="concluida === false"
         round
         flat
         icon="delete"
@@ -71,6 +69,7 @@
         flat
         icon="edit"
         color="green"
+        :class="{'q-ml-auto' : concluida !== false}"
         @click="$emit('editar', tarefa)"
       />
     </q-card-section>
@@ -144,22 +143,18 @@ export default defineComponent({
     }
 
     const concluirTarefa = async () => {
-      let action = 'Concluir'
-      if (concluida.value)  {// foi direto para true portando veio de null (cancelada)
-        concluida.value = null
-        action = 'Reabrir a'
-      }
       const options = {
-        ok: { label: `${action} tarefa`, color: 'primary' },
+        ok: { label: 'Concluir tarefa', color: 'primary' },
       }
 
-      const confirm = await showCustomConfirmDialog(`${action} tarefa`, 'Concluir a tarefa selecionada?', options.ok)
+      const confirm = await showCustomConfirmDialog('Concluir tarefa', 'Concluir a tarefa selecionada?', options.ok)
       if (!confirm) {
         concluida.value = false
+        return
       }      
 
       try {
-        await TarefasApi.putTarefa(props.tarefa.id, { 'status': concluida.value ? 'concluida' : 'pendente' })
+        await TarefasApi.putTarefa(props.tarefa.id, { 'status': 'concluida'})
 
         notifySuccess('Tarefa concluída')
         emit('atualizar')
