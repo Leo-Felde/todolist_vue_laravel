@@ -180,14 +180,14 @@
     <DialogCriarCategoria
       v-model="dialogoCategoria"
       :categoria="categoriaEditada"
-      @atualizar="getCategorias()"
+      @atualizar="getCategorias(true)"
     />
 
     <DialogCriarTarefa
       v-model="dialogoTarefa"
       :tarefa="tarefaEditada"
       :tarefa-pai="tarefaPai"
-      @atualizar="getTarefas()"
+      @atualizar="getTarefas(true)"
     />
   </div>
 </template>
@@ -248,21 +248,15 @@ export default defineComponent({
     })
     
     const getTarefas = async (resetar = false) => {
+      if (!hasMore.value && !resetar) return
       
-      if (resetar) {
-        // tarefas.value = []
-        page.value = 1
-        hasMore.value = true
-      }
-      if (!hasMore.value) return
-      loadingTarefas.value = true
-
       try {
         const params = {
-          page: page.value,
+          page: resetar ? 1 : page.value,
           titulo: search.value
         }
         const resp = await TarefasApi.getTarefas(params)
+        
 
         if (resp.data?.data.length > 0) {
           const groupedTarefas = resp.data.data.reduce((acc, tarefa) => {
@@ -273,7 +267,7 @@ export default defineComponent({
             acc[categoria].push(tarefa)
             return acc
           }, {})
-
+          
           tarefas.value = resetar
             ? groupedTarefas
             : { ...tarefas.value, ...groupedTarefas }

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\SubTarefa;
+use App\Models\Tarefa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubTarefaController extends Controller
 {
@@ -63,5 +65,23 @@ class SubTarefaController extends Controller
         $subTarefa->delete();
 
         return response()->json(['message' => 'Subtarefa excluída com sucesso'], 200);
+    }
+
+    public function updateSubtarefasStatus($tarefaId, $status)
+    {
+        $subtarefas = DB::table('sub_tarefas')
+            ->where('id_tarefa', $tarefaId)
+            ->pluck('id_subtarefas')
+            ->map(function ($json) {
+                return json_decode($json, true);
+            })
+            ->flatten()
+            ->toArray();
+
+        if (!empty($subtarefas)) {
+            Tarefa::whereIn('id', $subtarefas)
+                ->where('status', 'pendente')
+                ->update(['status' => $status]);
+        }
     }
 }

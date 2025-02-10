@@ -8,6 +8,7 @@ use App\Models\TarefaUsuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\TarefaUsuarioController;
+use App\Http\Controllers\SubTarefaController;
 
 class TarefaController extends Controller
 {
@@ -44,8 +45,9 @@ class TarefaController extends Controller
                 ->flatten()
                 ->toArray();
         
-            $tarefa->subtarefas = Tarefa::whereIn('id', $subtarefas)->get();
+            $tarefa->subtarefas = Tarefa::whereIn('id', $subtarefas)->with('categoria')->get();
         });
+
 
         return response()->json($tarefas, 200);
     }
@@ -106,6 +108,7 @@ class TarefaController extends Controller
             'colaboradores' => 'nullable|array',
         ]);
         DB::beginTransaction();
+        $originalStatus = $tarefa->status;
 
         try {
             $tarefa->update($validated);
@@ -124,12 +127,17 @@ class TarefaController extends Controller
                     );
                 }
             }
+
+            if ($originalStatus == 'pendente' && in_array($tarefa->status, ['concluida', 'cancelada'])) {
+                $subTarefaController = new SubTarefaController();
+                $subTarefaController->updateSubtarefasStatus($tarefa->id, $tarefa->status);
+            }
             
             DB::commit();
             return response()->json($tarefa, 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Não foi possível criar a tarefa'], 500);
+            return response()->json(['error' => 'Não foi possível editar a tarefa'], 500);
         }
     }
 
@@ -137,6 +145,6 @@ class TarefaController extends Controller
     public function destroy(Tarefa $tarefa)
     {
         $tarefa->delete();
-        return response()->json(['message' => 'Tarefa excluída excluída com sucesso'], 200);
+        return response()->json(['message' => 'Tarefa excluída com sucesso'], 200);
     }
 }

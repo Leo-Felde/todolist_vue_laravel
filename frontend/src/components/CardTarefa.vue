@@ -12,8 +12,8 @@
         >
           <label class="tarefa-data-criacao"> Criada {{ formatarData(tarefa.created_at) }}</label>
           <q-chip 
-            :color="statusCor"
-            :text-color="statusTextoCor"
+            :color="statusCor(tarefa.status)"
+            :text-color="statusTextoCor(tarefa.status)"
             class="q-ml-sm"
           >
             {{ tarefa.status }}
@@ -86,9 +86,17 @@
         class="card-subtarefa"
       >
         <q-card-section class="q-pa-sm">
-          <span class="q-ma-none">
+          <span class="q-my-none q-ml-none q-mr-sm">
             {{ subTarefa.titulo }}
           </span>
+          <q-chip 
+            :color="statusCor(subTarefa.status)"
+            :text-color="statusTextoCor(subTarefa.status)"
+            class="q-ml-sm"
+            size="sm"
+          >
+            {{ subTarefa.status }}
+          </q-chip>
 
           <div class="text-subtitle2 descricao-tarefa q-mt-sm q-ml-md">
             {{ subTarefa.descricao }}
@@ -96,7 +104,7 @@
         </q-card-section>
         <div>
           <q-btn
-            v-show="concluida === false"
+            v-show="concluida === false && subTarefa.status === 'pendente'"
             round
             flat
             icon="delete"
@@ -130,7 +138,7 @@
 
 <script>
 import { showCustomConfirmDialog } from 'src/utils/promptDialog'
-import { computed, defineComponent, onMounted, ref } from 'vue'
+import { computed, defineComponent } from 'vue'
 
 import TarefasApi from 'src/api/tarefas'
 import { notifyError, notifySuccess } from 'src/utils/notify'
@@ -151,32 +159,8 @@ export default defineComponent({
 
   emits: ['atualizar', 'editar', 'adicionar-subtarefa'],
   setup (props, { emit }) {
-    const concluida = ref(false)
 
-    onMounted(() => {
-      concluida.value = statusConclusao()
-    })
-
-    const statusTextoCor = computed(() => {
-      return props.tarefa.status === 'pendente' || props.tarefa.status === 'cancelada'
-        ? 'black'
-        : 'white'
-    })
-
-    const statusCor = computed(() => {
-      switch (props.tarefa.status) {
-      case 'pendente':
-        return 'yellow'
-      case 'concluida':
-        return 'green'
-      case 'cancelada':
-        return 'red'
-      default:
-        return 'grey'
-      }
-    })
-
-    const statusConclusao = (() => {
+    const concluida = computed(() => {
       switch (props.tarefa.status) {
       case 'pendente':
         return false
@@ -188,6 +172,25 @@ export default defineComponent({
         return null
       }
     })
+
+    const statusTextoCor = (status) => {
+      return status === 'pendente' || status === 'cancelada'
+        ? 'black'
+        : 'white'
+    }
+
+    const statusCor = (status) => {
+      switch (status) {
+      case 'pendente':
+        return 'yellow'
+      case 'concluida':
+        return 'green'
+      case 'cancelada':
+        return 'red'
+      default:
+        return 'grey'
+      }
+    }
 
     const formatarData = (data) => {
       const opcoes = { year: 'numeric', month: 'long', day: 'numeric' }
@@ -201,7 +204,6 @@ export default defineComponent({
 
       const confirm = await showCustomConfirmDialog('Concluir tarefa', 'Concluir a tarefa selecionada?', options.ok)
       if (!confirm) {
-        concluida.value = false
         return
       }      
 
@@ -223,10 +225,8 @@ export default defineComponent({
 
       const confirm = await showCustomConfirmDialog('Cancelar Tarefa', 'Cancelar a tarefa selecionada?', options.ok)
       if (!confirm) {
-        concluida.value = false
         return
-      }      
-      concluida.value = null
+      } 
 
       try {
         await TarefasApi.putTarefa(props.tarefa.id, { 'status': 'cancelada' })
@@ -246,16 +246,14 @@ export default defineComponent({
 
       const confirm = await showCustomConfirmDialog('Cancelar subTarefa', 'Cancelar a subTarefa selecionada?', options.ok)
       if (!confirm) {
-        concluida.value = false
         return
-      }      
-      concluida.value = null
+      } 
 
       try {
         await TarefasApi.putTarefa(subTarefa.id, { 'status': 'cancelada' })
 
-        notifySuccess('Tarefa cancelada')
         emit('atualizar')
+        notifySuccess('Tarefa cancelada')
       } catch (error) {
         console.error(error)
         notifyError('Não foi possível cancelar a tarefa')

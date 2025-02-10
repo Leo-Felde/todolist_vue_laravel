@@ -19,7 +19,7 @@
         <q-form ref="formulario">
           <FormTarefa
             v-model="taskData"
-            :sub-tarefa="!!tarefaPai"
+            :sub-tarefa="!!tarefaPai.id"
           />
         </q-form>
       </q-card-section>

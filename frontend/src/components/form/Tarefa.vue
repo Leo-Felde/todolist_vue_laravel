@@ -27,7 +27,6 @@
       <div class="col-12">
         <AutocompleteCategoria
           v-model="form.categoria"
-          :readonly="subTarefa"
         />
       </div>
     </div>
