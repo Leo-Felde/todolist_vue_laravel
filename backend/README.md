@@ -40,5 +40,5 @@ php artisan test
 ### Rodar servidor de Desenvolvimento
 
 ```
-composer run dev
+php artisan serve
 ```

@@ -66,7 +66,7 @@ Abra um terminal no diretório do projeto e digite os seguintes comandos:</br>
 
 **Servidor back-end**
 ```
-composer run dev
+php artisan serve
 ```
 
 **Testes do back-end**
